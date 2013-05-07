@@ -1,0 +1,16 @@
+@media only screen and (min-width: 1400px) {
+    body {
+        background-color: yellow;
+    }
+}
+
+@media only screen and (min-width:1600px) {
+    body {
+        background-color: blue;
+    }
+
+    .no-cssgradients body {
+        background-color: purple;
+    }
+}
+
