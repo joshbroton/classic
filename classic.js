@@ -27,7 +27,6 @@ function doResizeCode() {
         windowWidth = window.innerWidth;
     }
     classic.breakpointLogic(windowWidth);
-    console.log(windowWidth);
 
 
 }
@@ -139,9 +138,16 @@ function doResizeCode() {
             for(var i = 0; i < classic.mediaqueries.length; i++) {
                 classic.createNewCss(classic.mediaqueries[i]);
             }
-
             //write to head
-            document.getElementsByTagName('head')[0].innerHTML += ('<style type="text/css">' + classic.newCss + '</style>')
+            var styleNode = document.createElement('style');
+            styleNode.setAttribute('type', 'text/css');
+            if(styleNode.styleSheet) {
+                styleNode.styleSheet.cssText = classic.newCss;
+            } else {
+                styleNode.appendChild(document.createTextNode(classic.newCss));
+            }
+
+            classic.head.appendChild(styleNode);
         },
 
         gen: {
@@ -239,14 +245,12 @@ function doResizeCode() {
         },
 
         addClassToHtml: function(newclass) {
-            console.log ('new class = ' + newclass);
             if (classic.html.className.indexOf(newclass) < 0) {
                 classic.html.className += ' ' + newclass;
             }
         },
 
         removeClassFromHtml: function(oldclass) {
-            console.log ('remove class = ' + oldclass);
             if (classic.html.className.indexOf(oldclass) >= 0) {
                 classic.html.className = classic.html.className.replace(new RegExp('(\\s|^)' + oldclass + '(\\s|$)','g'), '');
             }
