@@ -1,20 +1,28 @@
 //classic.js v0.01a -- uses classes to apply css from media queries in older browsers
+//By Josh Broton -- @joshbroton
+
+
+
+
+//Use timeout to improve performance of resize in IE
 var resizeTimeout;
 
 if (window.attachEvent) {
     window.attachEvent('onresize', function() {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout('doResizeCode()', 100);
+        resizeTimeout = setTimeout('onResize()', 100);
     });
 } else if (window.addEventListener) {
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout('doResizeCode()', 100);
+        resizeTimeout = setTimeout('onResize()', 100);
     });
 }
 
-function doResizeCode() {
+function onResize() {
     var windowWidth = 0;
+
+    //since IE uses a different method of measuring the doc width, test and use the appropriate one here
     if (document.body && document.body.offsetWidth) {
         windowWidth = document.body.offsetWidth;
     }
@@ -27,8 +35,6 @@ function doResizeCode() {
         windowWidth = window.innerWidth;
     }
     classic.breakpointLogic(windowWidth);
-
-
 }
 
 /*(function() {
@@ -52,6 +58,7 @@ function doResizeCode() {
 
         //functions
         initVars: function () {
+            //Assign values to variables in classic
             classic.docElem = classic.doc.documentElement;
             classic.head = classic.doc.getElementsByTagName('head')[0] || classic.docElem;
             classic.cssLinks = classic.head.getElementsByTagName('link');
@@ -59,14 +66,18 @@ function doResizeCode() {
             classic.htmlClasses = classic.html.className.split(' ');
             classic.htmlClassRegex = '( \\.';
 
+            //build the regex that will be used later to remove a space between
+            //the new classes and the classes on the <head> from Modernizr
             for(var i = 0; i < classic.htmlClasses.length; i++) {
                 if (classic.htmlClasses[i] !== '') {
                     classic.htmlClassRegex += classic.htmlClasses[i] + '| \\.';
                 }
             }
 
+            //remove the last set of 'or' characters from the regex
             classic.htmlClassRegex = classic.htmlClassRegex.substring(0, classic.htmlClassRegex.length - 4) + ')';
 
+            //create regex object
             classic.htmlClassRegex = new RegExp(classic.htmlClassRegex, 'gi');
 
             //get hrefs from stylesheet links
@@ -80,6 +91,7 @@ function doResizeCode() {
                 }
             }
 
+            //start getCSS at position 0
             classic.getCSS(0);
         },
 
@@ -93,10 +105,14 @@ function doResizeCode() {
                 thisHref = classic.cssHrefs[pos];
 
                 classic.ajax(thisHref, function(styles) {
+
+                    //save media queries to foundBlocks
                     foundBlocks.push(styles.match(  /@media[^\{]+\{([^\{\}]*\{[^\}\{]*\})+/gi ));
                     for(var i = 0; i < foundBlocks[0].length; i++) {
                         classic.styleblocks.push(foundBlocks[0][i]);
                     }
+
+                    //recursive call
                     classic.getCSS(pos + 1);
 
                     if(hrefLength === pos + 1) {
@@ -110,6 +126,7 @@ function doResizeCode() {
         },
 
         parseStyles: function() {
+            //Parse each block of CSS and create the objects we'll use to create the new rules
             var thisBlock = '';
             var iQuery, iMin, iMax, iCss, iClass;
             for(var i = 0; i < classic.styleblocks.length; i++) {
@@ -132,6 +149,7 @@ function doResizeCode() {
                 };
             }
 
+            //Create all the new CSS
             for(var i = 0; i < classic.mediaqueries.length; i++) {
                 classic.createNewCss(classic.mediaqueries[i]);
             }
@@ -140,16 +158,24 @@ function doResizeCode() {
             var styleNode = document.createElement('style');
             styleNode.setAttribute('type', 'text/css');
             if(styleNode.styleSheet) {
+                //IE specific method
                 styleNode.styleSheet.cssText = classic.newCss;
             } else {
+                //Modern browsers (not that you'll use it for those, but in case it's accidentally referenced
                 styleNode.appendChild(document.createTextNode(classic.newCss));
             }
 
+            //write new css to the <head>
             classic.head.appendChild(styleNode);
+
+            //Run one time
+            onResize();
         },
 
         gen: {
+            //functions used to generate different elements of a mediaquery object
             query: function(block) {
+                //pull the media query out of the css block
                 var str = block.match(/(?:min-width\:|max-width\:).+\)/ig)[0];
                 str = str.substring(0, str.length - 1);
 
@@ -158,6 +184,7 @@ function doResizeCode() {
 
             min: function(block) {
                 //TODO: Include em support
+                //find value of min
                 if (block.indexOf('min') > -1) {
                     if (block.indexOf('em') > -1) {
                         block = block.replace(/min-width\:\s*/ig, '').replace(/em/ig, '');
@@ -174,6 +201,7 @@ function doResizeCode() {
 
             max: function(block) {
                 //TODO: Include em support
+                //find value of max
                 if (block.indexOf('max') > -1) {
                     if (block.indexOf('em') > -1) {
                         block = block.replace(/max-width\:\s*/ig, '').replace(/em/ig, '');
@@ -189,10 +217,13 @@ function doResizeCode() {
             },
 
             css: function(block) {
+                //Remove media query and closing bracket from the CSS block.
+                //Remove linebreaks
                 var pos = block.indexOf('{');
                 block = block.substring(pos + 1, block.length);
                 block = block.replace(/(\r\n|\n|\r)/gm,'').replace(/\s{2,}/g, ' ');
 
+                //remove space if first char
                 if (block.indexOf(' ') === 0) {
                     block = block.substring(1);
                 }
@@ -201,6 +232,7 @@ function doResizeCode() {
             },
 
             newClass: function(min, max) {
+                //Create the classname that will be used for this mediaquery
                 var classname;
                 if (min != null) {
                     classname = 'minwidth' + min;
@@ -313,8 +345,8 @@ function doResizeCode() {
         })()
     };
 
+    //Run classic.js and call the resize once.
     classic.fire();
-
 /*})();*/
 
 //TODO: parsedSheets{} = ??? To store parsed sheets / should be able to reference by 'href' and find if parsed (see respond.js)
