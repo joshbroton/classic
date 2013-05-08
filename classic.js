@@ -60,7 +60,9 @@ function doResizeCode() {
             classic.htmlClassRegex = '( \\.';
 
             for(var i = 0; i < classic.htmlClasses.length; i++) {
-                classic.htmlClassRegex += classic.htmlClasses[i] + '| \\.';
+                if (classic.htmlClasses[i] !== '') {
+                    classic.htmlClassRegex += classic.htmlClasses[i] + '| \\.';
+                }
             }
 
             classic.htmlClassRegex = classic.htmlClassRegex.substring(0, classic.htmlClassRegex.length - 4) + ')';
@@ -108,14 +110,11 @@ function doResizeCode() {
         },
 
         parseStyles: function() {
-
-            //classic.mq.queries.push(styles.match(/min-width\:\s*.+\)$/ig));
-            //console.log(styles.match(/(?:min-width\:|max-width\:).+\)/ig));
             var thisBlock = '';
             var iQuery, iMin, iMax, iCss, iClass;
             for(var i = 0; i < classic.styleblocks.length; i++) {
                 thisBlock = classic.styleblocks[i];
-                //console.log(thisBlock);
+
                 iMin = -1;
                 iMax = -1;
                 iQuery = classic.gen.query(thisBlock);
@@ -132,12 +131,11 @@ function doResizeCode() {
                     newclass: iClass
                 };
             }
-            /*console.log(classic.mq.styleblocks);
-            console.log(classic.mq.queries);*/
 
             for(var i = 0; i < classic.mediaqueries.length; i++) {
                 classic.createNewCss(classic.mediaqueries[i]);
             }
+
             //write to head
             var styleNode = document.createElement('style');
             styleNode.setAttribute('type', 'text/css');
@@ -161,7 +159,12 @@ function doResizeCode() {
             min: function(block) {
                 //TODO: Include em support
                 if (block.indexOf('min') > -1) {
-                    block = block.replace(/min-width\:\s*/ig, '').replace(/px/ig, '');
+                    if (block.indexOf('em') > -1) {
+                        block = block.replace(/min-width\:\s*/ig, '').replace(/em/ig, '');
+                        block = classic.calculateEms(block);
+                    } else {
+                        block = block.replace(/min-width\:\s*/ig, '').replace(/px/ig, '') * 1;
+                    }
                 } else {
                     block = null;
                 }
@@ -172,7 +175,12 @@ function doResizeCode() {
             max: function(block) {
                 //TODO: Include em support
                 if (block.indexOf('max') > -1) {
-                    block = block.replace(/max-width\:\s*/ig, '').replace(/px/ig, '');
+                    if (block.indexOf('em') > -1) {
+                        block = block.replace(/max-width\:\s*/ig, '').replace(/em/ig, '');
+                        block = classic.calculateEms(block);
+                    } else {
+                        block = block.replace(/max-width\:\s*/ig, '').replace(/px/ig, '') * 1;
+                    }
                 } else {
                     block = null;
                 }
@@ -230,10 +238,18 @@ function doResizeCode() {
             var newCSS = dotclass + ' ' + mq.css;
             var last = newCSS.lastIndexOf('}');
 
-            // replace all } with '} .newCSSClass' unless in
-            var replacing = newCSS.substring(0, last).replace(/}/g, '} ' + dotclass);
+            // replace all } with '} .newCSSClass' unless last
+            var replacing = newCSS.substring(0, last).replace(/}/g, '} ' + dotclass + ' ');
 
             newCSS = replacing + newCSS.substring(last);
+
+            //replace multiple selectors with new classes
+            var tempArray = newCSS.split('}');
+            newCSS = '';
+            for (var i = 0; i < tempArray.length - 1; i++) {
+                newCSS += tempArray[i].replace(/,(?=.*{)/g, (',' + ' ' + dotclass + ' ')) + '} ';
+            }
+
             newCSS = newCSS.replace(classic.htmlClassRegex, removeLeadingSpace);
 
             classic.newCss += newCSS + ' ';
@@ -241,7 +257,6 @@ function doResizeCode() {
             function removeLeadingSpace(matching) {
                 return matching.substring(1);
             }
-
         },
 
         addClassToHtml: function(newclass) {
@@ -254,6 +269,10 @@ function doResizeCode() {
             if (classic.html.className.indexOf(oldclass) >= 0) {
                 classic.html.className = classic.html.className.replace(new RegExp('(\\s|^)' + oldclass + '(\\s|$)','g'), '');
             }
+        },
+
+        calculateEms: function(ems) {
+            return ems * 16;
         },
 
         fire: function() {
