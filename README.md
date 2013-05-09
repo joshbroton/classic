@@ -4,7 +4,7 @@ classic.js
 Lightweight, fast media query polyfill
 -------------------------------------
 
-I wanted to find an alternative way to polyfill media query support in older versions of IE. This creates a new stylesheet by pre-pending an extra class onto each CSS selector inside of a media query and using the window resize event to add/remove thoes classes from HTML.
+I wanted to find an alternative way to polyfill media query support in older versions of IE. This creates a new stylesheet by pre-pending an extra class onto each CSS selector inside of a media query and using the window resize event to add/remove those classes from &lt;html&gt;.
 
 This is pre-pre-pre-alpha. This definitely isn't ready for production environments yet, but I am excited about the potential. It seems slightly slower to load but faster to switch breakpoints than respond.js (in my very limited testing).
 
