@@ -16,8 +16,8 @@ Working:
 *Works with media queries with either min-width or max-width values, but not both (yet)
 *IE8 -- I have not tested in 7 or 6 (nor do I plan to since you shouldn't be supporting them either)
 
-Not Working
------------
+Not Working:
+------------
 *(min-width:) and (max-width:) in the same media query
 *em to px conversion. Right now, it multiplies em by 16 to get pixel value
 *selectivizr exposes css files so the js can get at them without another http request. I haven't added that functionality yet.
@@ -26,6 +26,5 @@ Not Working
 
 To use:
 -------
-1. Reference in your <head> after all the stylesheets.
-    *This should work if you put it at the end of the <body>, but like all polyfills that you reference after the content, you'll see a more pronounced flash of un-styled content.
+1. Reference in your &lt;head&gt; after all the stylesheets. *This should work if you put it at the end of the &lt;body&gt;, but like all polyfills that you reference after the content, you'll see a more pronounced flash of un-styled content.
 2. Enjoy!
