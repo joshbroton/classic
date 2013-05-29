@@ -14,7 +14,7 @@ Working:
 --------
 * Core functionality
 * Works with media queries with either min-width or max-width values, but not both (yet)
-* IE8 -- I have not tested in 7 or 6 (nor do I plan to since you shouldn't be supporting them either)
+* IE8 -- I have not tested in 7 or 6, but plan to eventually
 
 Not Working:
 ------------
