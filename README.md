@@ -26,5 +26,6 @@ Not Working:
 
 To use:
 -------
-1. Reference in your &lt;head&gt; after all the stylesheets. *This should work if you put it at the end of the &lt;body&gt;, but like all polyfills that you reference after the content, you'll see a more pronounced flash of un-styled content.
+1. Reference in your &lt;head&gt; after all the stylesheets. 
+* This should work if you put it at the end of the &lt;body&gt;, but like all polyfills that you reference after the content, you'll see a more pronounced flash of un-styled content.
 2. Enjoy!
