@@ -12,17 +12,17 @@ I would appreciate you testing it with your css and reporting any issues.
 
 Working:
 --------
-*Core functionality
-*Works with media queries with either min-width or max-width values, but not both (yet)
-*IE8 -- I have not tested in 7 or 6 (nor do I plan to since you shouldn't be supporting them either)
+* Core functionality
+* Works with media queries with either min-width or max-width values, but not both (yet)
+* IE8 -- I have not tested in 7 or 6 (nor do I plan to since you shouldn't be supporting them either)
 
 Not Working:
 ------------
-*(min-width:) and (max-width:) in the same media query
-*em to px conversion. Right now, it multiplies em by 16 to get pixel value
-*selectivizr exposes css files so the js can get at them without another http request. I haven't added that functionality yet.
-*The entire script is in an exposed namespace. Will be fixing.
-*3rd party font providers, such as typekit, return a domain access error because of the cross-domain ajax request. Don't use them.
+* (min-width:) and (max-width:) in the same media query
+* em to px conversion. Right now, it multiplies em by 16 to get pixel value
+* selectivizr exposes css files so the js can get at them without another http request. I haven't added that functionality yet.
+* The entire script is in an exposed namespace. Will be fixing.
+* 3rd party font providers, such as typekit, return a domain access error because of the cross-domain ajax request. Don't use them.
 
 To use:
 -------
